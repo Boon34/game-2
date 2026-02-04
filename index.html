@@ -3,295 +3,221 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Boon's Quest: Period Rescue Mission v2</title>
+    <title>Boon's Adventure: Period Rescue</title>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <style>
         :root {
             --pixel-font: 'Press Start 2P', cursive;
-            --box-bg: #000000;
-            --text-color: #ffffff;
-            --highlight-color: #54f357; /* Màu xanh lá matrix */
-            --benefit-color: #f3ce54;   /* Màu vàng cho lợi ích */
-            --guide-color: #54dcf3;     /* Màu xanh dương cho hướng dẫn */
-            --border-color: #ffffff;
+            --box-bg: #222;
+            --text-color: #fff;
+            --highlight: #54f357;
         }
 
-        body, html {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            overflow: hidden;
-            background-color: #333;
-            font-family: var(--pixel-font);
-        }
+        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #333; font-family: var(--pixel-font); }
 
-        #game-container {
+        #game-stage {
             position: relative;
             width: 100%;
-            height: 100%;
-            /* Ảnh nền của bạn */
-            background-image: url('image_2.png');
+            height: 100vh;
+            background-image: url('bg.png'); /* Ảnh nền cây cầu */
             background-size: cover;
             background-position: center bottom;
-            background-repeat: no-repeat;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
+            overflow: hidden;
+        }
+
+        /* Nhân vật Mèo */
+        #hero-cat {
+            position: absolute;
+            bottom: 18%; /* Căn chỉnh để mèo đứng trên mặt cỏ */
+            left: 5%;    /* Vị trí xuất phát */
+            width: 120px; /* Kích thước mèo */
+            height: auto;
+            transition: left 3s linear; /* Hiệu ứng di chuyển mượt mà */
+            z-index: 10;
+        }
+
+        /* Hiệu ứng nhún nhảy khi đi bộ */
+        .walking {
+            animation: bounce 0.5s infinite alternate;
+        }
+        @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-10px); } }
+
+        /* Các trạm (Cột mốc vô hình) */
+        .station-marker {
+            position: absolute;
+            bottom: 20%;
+            width: 50px;
+            height: 50px;
+            /* border: 2px solid red; Bật lên để debug vị trí */ 
+            display: none; 
         }
 
         /* Hộp thoại */
         #dialogue-box {
-            width: 90%; 
-            max-width: 1200px;
-            margin: 0 auto 30px auto;
-            background-color: var(--box-bg);
-            border: 4px solid var(--border-color);
-            padding: 25px;
-            box-sizing: border-box;
-            color: var(--text-color);
-            min-height: 220px; 
-            display: flex;
-            flex-direction: column;
-        }
-
-        #speaker-name {
-            color: var(--highlight-color);
-            margin-bottom: 15px;
-            font-size: 1.2rem;
-            text-transform: uppercase;
-        }
-
-        #dialogue-text {
-            font-size: 0.9rem;
-            line-height: 1.8;
-            flex-grow: 1;
-            white-space: pre-wrap; /* Để nhận diện xuống dòng */
-        }
-
-        /* Nút bấm */
-        #options-container {
-            margin-top: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .pixel-btn {
-            background: none;
-            border: none;
-            color: var(--text-color);
-            font-family: var(--pixel-font);
-            font-size: 0.85rem;
-            text-align: left;
-            cursor: pointer;
-            padding: 5px 0;
-            position: relative;
-            padding-left: 25px;
-            transition: color 0.2s;
-        }
-
-        .pixel-btn:hover {
-            color: var(--highlight-color);
-        }
-
-        .pixel-btn:hover::before {
-            content: ">";
             position: absolute;
-            left: 0;
-            color: var(--highlight-color);
-            animation: blink 0.8s infinite;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 800px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 4px solid #fff;
+            padding: 20px;
+            color: #fff;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
         }
 
-        @keyframes blink {
-            0%, 49% { opacity: 1; }
-            50%, 100% { opacity: 0; }
+        #speaker { color: var(--highlight); margin-bottom: 10px; font-size: 0.8rem; }
+        #content { font-size: 0.7rem; line-height: 1.6; margin-bottom: 15px; min-height: 60px; }
+        
+        .btn-group { display: flex; flex-direction: column; gap: 8px; }
+        .game-btn {
+            background: #444; color: #fff; border: 2px solid #fff;
+            padding: 10px; font-family: var(--pixel-font); font-size: 0.6rem;
+            cursor: pointer; text-align: left; transition: 0.2s;
         }
+        .game-btn:hover { background: var(--highlight); color: #000; }
 
-        /* Style riêng cho phần Lợi ích và Hướng dẫn trong text */
-        .benefit-text { color: var(--benefit-color); }
-        .guide-text { color: var(--guide-color); }
+        .hidden { display: none !important; }
 
-        @media (max-width: 600px) {
-            #speaker-name { font-size: 0.9rem; }
-            #dialogue-text { font-size: 0.7rem; }
-            .pixel-btn { font-size: 0.65rem; }
-            #dialogue-box { padding: 15px; min-height: 250px;}
+        /* Màn hình tổng kết */
+        #summary-screen {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95); z-index: 200;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            color: white; text-align: center;
         }
     </style>
 </head>
 <body>
 
-    <div id="game-container">
+    <div id="game-stage">
+        <img id="hero-cat" src="https://media.tenor.com/fSsxHOga_n8AAAAi/pixel-cat-walking.gif" alt="Boon">
+        
         <div id="dialogue-box">
-            <div id="speaker-name">BOON REAL COOL:</div>
-            <div id="dialogue-text">Loading...</div>
-            <div id="options-container"></div>
+            <div id="speaker">BOON REAL COOL</div>
+            <div id="content">Loading...</div>
+            <div class="btn-group" id="choices"></div>
+        </div>
+
+        <div id="summary-screen" class="hidden">
+            <h1 style="color: #54f357; margin-bottom: 30px;">MISSION COMPLETED</h1>
+            <div id="final-menu" style="text-align: left; line-height: 2;"></div>
+            <p style="margin-top: 30px; color: #ff69b4;">"Yêu vợ nhiều lắm! ❤️"</p>
         </div>
     </div>
 
     <script>
-        // --- KỊCH BẢN GAME ---
-        const storyData = {
-            // Mở đầu
-            welcome: {
-                speaker: "BOON REAL COOL",
-                text: "Chào bạn! Mình là Boon Real Cool.\nĐinh Vũ Lâm đã triệu hồi mình đến đây để chăm sóc bạn trong những ngày 'đèn đỏ' khó ở này.\n\nNhiệm vụ của chúng ta là đi qua 3 trạm để tìm lại sự thoải mái. Sẵn sàng chưa?",
-                options: [
-                    { text: "Đi thôi Boon ơi! 🚀", nextState: "station1_Intro" }
+        // Cấu hình vị trí các trạm trên cầu (theo % màn hình)
+        const STATIONS = {
+            START: 5,
+            STATION_1: 30, // Trạm ăn uống
+            STATION_2: 55, // Trạm cơ thể
+            STATION_3: 80, // Trạm tinh thần
+            END: 120       // Đi ra khỏi màn hình
+        };
+
+        const cat = document.getElementById('hero-cat');
+        const dialogBox = document.getElementById('dialogue-box');
+        const contentDiv = document.getElementById('content');
+        const choicesDiv = document.getElementById('choices');
+        let userMenu = [];
+
+        // Dữ liệu hội thoại
+        const STORY = {
+            start: {
+                text: "Chào bạn! Mình là Boon Real Cool. Đinh Vũ Lâm phái mình đến tháp tùng bạn đi qua Cầu Cầu Vồng để tìm sự thư giãn.\n\nSẵn sàng chưa?",
+                choices: [
+                    { text: "Đi thôi Boon ơi! 🐾", action: () => walkTo(STATIONS.STATION_1, 'station1') }
                 ]
             },
-
-            // --- TRẠM 1: ĂN UỐNG ---
-            station1_Intro: {
-                speaker: "TRẠM 1: NẠP NĂNG LƯỢNG",
-                text: "Cái bụng đang biểu tình rồi. Bạn muốn dùng món gì nào?",
-                options: [
-                    { text: "🥛 Một cốc nước ấm (Basic but Gold)", nextState: "st1_water", saveChoice: true },
-                    { text: "🍌 Hoa quả tốt (Chuối/Đu đủ...)", nextState: "st1_fruit", saveChoice: true },
-                    { text: "🍟 Đang thèm ăn vặt (Bim bim/Nước ngọt)", nextState: "st1_cravings", saveChoice: true }
+            station1: {
+                text: "TRẠM 1: NẠP NĂNG LƯỢNG 🍲\nChúng ta đã đến trạm đầu tiên. Bụng bạn đang khó chịu, hãy chọn món gì đó ấm áp nhé?",
+                choices: [
+                    { text: "Cốc nước ấm (Giảm đau bụng)", action: () => saveAndNext("Nước ấm", STATIONS.STATION_2, 'station2') },
+                    { text: "Hoa quả: Chuối/Đu đủ (Giảm mệt)", action: () => saveAndNext("Hoa quả", STATIONS.STATION_2, 'station2') },
+                    { text: "Gói cứu trợ: Bim bim (Vui vẻ)", action: () => saveAndNext("Ăn vặt", STATIONS.STATION_2, 'station2') }
                 ]
             },
-            
-            // Chi tiết Trạm 1
-            st1_water: {
-                speaker: "INFO: NƯỚC ẤM",
-                text: "Lựa chọn an toàn tuyệt đối!\n\n<span class='benefit-text'>★ LỢI ÍCH:</span> Giúp giãn cơ tử cung, giảm đau bụng và đẩy nhanh quá trình lưu thông máu.",
-                options: [{ text: "Đã uống xong -> Làm nhiệm vụ kế", nextState: "station1_Task" }]
-            },
-            st1_fruit: {
-                speaker: "INFO: HOA QUẢ",
-                text: "Healthy quá nè!\n\n<span class='benefit-text'>★ LỢI ÍCH:</span> Chuối hay Đu đủ chứa nhiều Kali và Vitamin, giúp giảm tích nước và bớt cảm giác thèm ngọt linh tinh.",
-                options: [{ text: "Đã măm xong -> Làm nhiệm vụ kế", nextState: "station1_Task" }]
-            },
-            st1_cravings: {
-                speaker: "INFO: CHEAT MEAL",
-                text: "Oke chiều chuộng bản thân một chút!\n\n<span class='benefit-text'>★ LỢI ÍCH:</span> Thỏa mãn cơn thèm và giúp tâm trạng vui vẻ lên ngay lập tức (Dopamine boost!).\n\n*Lưu ý: Ăn một xíu thôi nhé, nhiều đường quá sẽ mệt thêm đó.*",
-                options: [{ text: "Đã ăn xong (vui vẻ) -> Làm nhiệm vụ kế", nextState: "station1_Task" }]
-            },
-
-            // Nhiệm vụ chuyển tiếp Trạm 1
-            station1_Task: {
-                speaker: "CHECKPOINT 1",
-                text: "⚠️ NHIỆM VỤ: Bạn hãy hoàn thành việc ăn/uống món vừa chọn trước khi chúng ta sang trạm chăm sóc cơ thể nhé.",
-                options: [
-                    { text: "Đã nạp năng lượng xong ✅ -> Đi tiếp", nextState: "station2_Intro" }
+            station2: {
+                text: "TRẠM 2: CHĂM SÓC CƠ THỂ 🛁\nĐi được nửa đường rồi. Cơ thể cần được vỗ về, bạn muốn làm gì?",
+                choices: [
+                    { text: "Ngâm chân nước ấm trước ngủ", action: () => saveAndNext("Ngâm chân", STATIONS.STATION_3, 'station3') },
+                    { text: "Skincare tối giản, nhẹ nhàng", action: () => saveAndNext("Skincare", STATIONS.STATION_3, 'station3') }
                 ]
             },
-
-            // --- TRẠM 2: CƠ THỂ & SKINCARE ---
-            station2_Intro: {
-                speaker: "TRẠM 2: SPA TẠI GIA",
-                text: "Giờ là lúc vỗ về cơ thể. Bạn muốn chọn liệu trình nào?",
-                options: [
-                    { text: "🦶 Ngâm chân nước ấm trước khi ngủ", nextState: "st2_soak", saveChoice: true },
-                    { text: "✨ Skincare tối giản (Da đang nhạy cảm)", nextState: "st2_skincare", saveChoice: true }
+            station3: {
+                text: "TRẠM 3: CHILL TINH THẦN 🎵\nTrạm cuối cùng trên cầu. Tối nay bạn muốn không gian như thế nào?",
+                choices: [
+                    { text: "Xem phim cùng Lâm (Cơm chó)", action: () => saveAndNext("Xem phim cùng Lâm", STATIONS.END, 'finish') },
+                    { text: "Xem phim một mình (Me time)", action: () => saveAndNext("Xem phim 1 mình", STATIONS.END, 'finish') },
+                    { text: "Đọc truyện tranh & Ngủ sớm", action: () => saveAndNext("Đọc truyện", STATIONS.END, 'finish') }
                 ]
-            },
-
-            // Chi tiết Trạm 2 (Kèm hướng dẫn)
-            st2_soak: {
-                speaker: "GUIDE: NGÂM CHÂN",
-                text: "<span class='benefit-text'>★ LỢI ÍCH:</span> Dẫn hỏa hư đi xuống, giúp ngủ siêu ngon và giảm đau bụng hiệu quả.\n\n<span class='guide-text'>★ CÁCH LÀM:</span>\n1. Pha nước ấm khoảng 40 độ (đừng bỏng quá).\n2. Ngâm 15-20 phút cho thư giãn.\n3. Lau khô chân và đi tất ngay.",
-                options: [{ text: "Đã hiểu & Sẽ làm -> Checkpoint", nextState: "station2_Task" }]
-            },
-            st2_skincare: {
-                speaker: "GUIDE: SKINCARE NGÀY ĐÈN ĐỎ",
-                text: "<span class='benefit-text'>★ LỢI ÍCH:</span> Giúp da thông thoáng, giảm tiết dầu và ngăn ngừa mụn do hormone.\n\n<span class='guide-text'>★ CÁCH LÀM:</span>\n1. Rửa mặt thật sạch (Quan trọng nhất).\n2. Toner cấp ẩm nhẹ nhàng.\n3. Kem dưỡng ẩm mỏng nhẹ.\n(Bỏ qua các bước treatment nặng đô hôm nay nhé!)",
-                options: [{ text: "Đã hiểu & Sẽ làm -> Checkpoint", nextState: "station2_Task" }]
-            },
-
-            // Nhiệm vụ chuyển tiếp Trạm 2
-            station2_Task: {
-                speaker: "CHECKPOINT 2",
-                text: "⚠️ NHIỆM VỤ: Hãy thực hiện (hoặc chuẩn bị) cho hoạt động thư giãn này ngay bây giờ nhé.",
-                options: [
-                    { text: "Cơ thể đã sẵn sàng 🧖‍♀️ -> Trạm cuối", nextState: "station3_Intro" }
-                ]
-            },
-
-            // --- TRẠM 3: TINH THẦN ---
-            station3_Intro: {
-                speaker: "TRẠM 3: TÂM HỒN",
-                text: "Cuối cùng, hãy chọn cách giải trí để kết thúc một ngày dài nào:",
-                options: [
-                    { text: "🎬 Xem phim cùng Lâm (Cơm chó time)", nextState: "st3_withLam", saveChoice: true },
-                    { text: "🍿 Xem phim một mình (Me time)", nextState: "st3_alone", saveChoice: true },
-                    { text: "📚 Đọc truyện tranh/Tiểu thuyết", nextState: "st3_read", saveChoice: true }
-                ]
-            },
-
-            // Chi tiết Trạm 3
-            st3_withLam: {
-                speaker: "INFO: XEM CÙNG LÂM",
-                text: "<span class='benefit-text'>★ LỢI ÍCH:</span> Có gối ôm 37 độ, được xoa bụng miễn phí và cảm giác được che chở.\n\nLâm đang đợi lệnh triệu tập!",
-                options: [{ text: "Triệu tập Lâm ngay! -> Tổng kết", nextState: "finish" }]
-            },
-            st3_alone: {
-                speaker: "INFO: ME TIME",
-                text: "<span class='benefit-text'>★ LỢI ÍCH:</span> Tự do khóc cười, không ai làm phiền, sạc lại năng lượng hướng nội.\n\nHãy chọn bộ phim yêu thích nhất của bạn nhé.",
-                options: [{ text: "Bật Netflix lên! -> Tổng kết", nextState: "finish" }]
-            },
-            st3_read: {
-                speaker: "INFO: ĐỌC TRUYỆN",
-                text: "<span class='benefit-text'>★ LỢI ÍCH:</span> Rời xa ánh sáng xanh điện thoại, giúp mắt đỡ mỏi và dễ đi vào giấc ngủ hơn.\n\nCuộn mình trong chăn và đọc thôi.",
-                options: [{ text: "Lấy sách ra thôi -> Tổng kết", nextState: "finish" }]
-            },
-
-            // --- KẾT THÚC ---
-            finish: {
-                speaker: "HỆ THỐNG",
-                text: "MISSION COMPLETED!\nĐơn hàng 'Chăm Sóc Công Chúa' đã được chốt đơn.",
-                isSummary: true,
-                finalNote: "Lâm nhắn: 'Anh biết em mệt, nghỉ ngơi đi nhé, mọi việc cứ để anh lo! ❤️'"
             }
         };
 
-        // --- LOGIC GAME (GIỮ NGUYÊN) ---
-        let currentState = "welcome";
-        let userChoices = [];
-
-        const speakerEl = document.getElementById("speaker-name");
-        const dialogueTextEl = document.getElementById("dialogue-text");
-        const optionsContainerEl = document.getElementById("options-container");
-
-        function renderState(stateKey) {
-            const data = storyData[stateKey];
+        // Hàm di chuyển mèo
+        function walkTo(positionPercent, nextStoryKey) {
+            // 1. Ẩn hộp thoại để đi
+            dialogBox.classList.add('hidden');
             
-            speakerEl.textContent = data.speaker + ":";
-            dialogueTextEl.innerHTML = data.text.replace(/\n/g, "<br>"); // Convert xuống dòng
+            // 2. Thêm class nhún nhảy
+            cat.classList.add('walking');
+            
+            // 3. Di chuyển
+            cat.style.left = positionPercent + '%';
 
-            optionsContainerEl.innerHTML = "";
-
-            if (data.isSummary) {
-                let summaryHtml = "<br><br>--- MENU CỦA BẠN ---<br>";
-                userChoices.forEach((choice, index) => {
-                    summaryHtml += `▶ ${choice}<br>`;
-                });
-                summaryHtml += `<br><span style="color: #ff69b4;">${data.finalNote}</span>`;
-                dialogueTextEl.innerHTML += summaryHtml;
-                return;
-            }
-
-            data.options.forEach(option => {
-                const btn = document.createElement("button");
-                btn.className = "pixel-btn";
-                btn.textContent = option.text;
+            // 4. Tính thời gian chờ (để mèo đi đến nơi mới hiện chữ)
+            // Giả lập đi mất 3 giây
+            setTimeout(() => {
+                cat.classList.remove('walking'); // Dừng nhún
                 
-                btn.onclick = () => {
-                    if (option.saveChoice) {
-                        // Lấy text thuần túy để lưu vào menu (bỏ icon)
-                        let cleanText = option.text; 
-                        userChoices.push(cleanText);
-                    }
-                    currentState = option.nextState;
-                    renderState(currentState);
-                };
-                
-                optionsContainerEl.appendChild(btn);
+                if (nextStoryKey === 'finish') {
+                    showSummary();
+                } else {
+                    dialogBox.classList.remove('hidden');
+                    renderDialog(nextStoryKey);
+                }
+            }, 3000);
+        }
+
+        // Hàm lưu lựa chọn và đi tiếp
+        function saveAndNext(choice, nextPos, nextKey) {
+            userMenu.push(choice);
+            walkTo(nextPos, nextKey);
+        }
+
+        // Hiển thị hội thoại
+        function renderDialog(key) {
+            const data = STORY[key];
+            contentDiv.innerText = data.text;
+            choicesDiv.innerHTML = ''; // Xóa nút cũ
+
+            data.choices.forEach(c => {
+                const btn = document.createElement('button');
+                btn.className = 'game-btn';
+                btn.innerText = "> " + c.text;
+                btn.onclick = c.action;
+                choicesDiv.appendChild(btn);
             });
         }
 
-        renderState(currentState);
+        // Hiển thị tổng kết
+        function showSummary() {
+            document.getElementById('summary-screen').classList.remove('hidden');
+            const menuDiv = document.getElementById('final-menu');
+            menuDiv.innerHTML = `
+                1. Ăn uống: <span style="color:#54f357">${userMenu[0]}</span><br>
+                2. Body: <span style="color:#54f357">${userMenu[1]}</span><br>
+                3. Spirit: <span style="color:#54f357">${userMenu[2]}</span>
+            `;
+        }
+
+        // Bắt đầu game
+        renderDialog('start');
 
     </script>
 </body>
