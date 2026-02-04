@@ -27,18 +27,20 @@
         }
 
         /* --- CẤU HÌNH MÈO --- */
-        #hero-cat {
+       #hero-cat {
             position: absolute;
-            /* Đẩy lên cao hơn để đứng trên cầu (34%) */
             bottom: 34%; 
             left: 5%;
-            width: 90px; /* Bé lại một chút cho cân đối */
+            width: 90px;
             height: auto;
             transition: left 2.5s linear;
             z-index: 10;
-            
-            /* DÒNG LỆNH QUAN TRỌNG: Tự động xóa nền đen của ảnh mèo */
+            /* Tự động xóa nền đen */
             mix-blend-mode: screen; 
+
+            /* THÊM DÒNG NÀY ĐỂ MÈO PIXEL SẮC NÉT HƠN */
+            image-rendering: pixelated; /* Cho Chrome, Edge */
+            image-rendering: -moz-crisp-edges; /* Cho Firefox */
         }
 
         .walking {
