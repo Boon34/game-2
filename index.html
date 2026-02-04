@@ -8,7 +8,8 @@
     <style>
         :root {
             --main-font: 'Quicksand', sans-serif;
-            --box-bg: rgba(0, 0, 0, 0.85);
+            /* ĐÃ GIẢM ĐỘ ĐẬM ĐỂ NỀN MỜ HƠN (0.5) */
+            --box-bg: rgba(0, 0, 0, 0.5);
             --text-color: #fff;
             --highlight: #54f357; 
             --btn-hover: #ff69b4;
@@ -26,7 +27,7 @@
             background-repeat: no-repeat;
         }
 
-        /* --- CẤU HÌNH MÈO --- */
+        /* --- CẤU HÌNH MÈO (ĐÃ TỐI ƯU ĐỘ NÉT) --- */
         #hero-cat {
             position: absolute;
             bottom: 34%; 
@@ -35,31 +36,40 @@
             height: auto;
             transition: left 2.5s linear;
             z-index: 10;
-            mix-blend-mode: screen; /* Xóa nền đen */
-            image-rendering: pixelated; /* Giữ độ nét pixel */
+            mix-blend-mode: screen;
+
+            /* BỘ CODE GIÚP ẢNH PIXEL NÉT NHẤT CÓ THỂ */
+            image-rendering: -moz-crisp-edges;         /* Firefox */
+            image-rendering: -webkit-optimize-contrast; /* Webkit (Safari, Chrome) */
+            image-rendering: crisp-edges;               /* Chuẩn mới */
+            image-rendering: pixelated;                 /* Chuẩn pixel */
+            -ms-interpolation-mode: nearest-neighbor;   /* IE */
         }
 
         .walking { animation: bounce 0.4s infinite alternate; }
         @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-8px); } }
 
-        /* --- HỘP THOẠI --- */
+        /* --- HỘP THOẠI (ĐÃ CHỈNH VỊ TRÍ VÀ ĐỘ MỜ) --- */
         #dialogue-box {
             position: absolute;
-            bottom: 50px;
+            /* ĐÃ HẠ THẤP XUỐNG SÁT MÉP DƯỚI */
+            bottom: 10px;
             left: 50%;
             transform: translateX(-50%);
-            width: 90%;
-            max-width: 600px;
-            background: var(--box-bg);
-            border: 2px solid rgba(255,255,255,0.3);
-            padding: 25px;
+            width: 95%; /* Rộng hơn một chút */
+            max-width: 650px;
+            background: var(--box-bg); /* Sử dụng nền mờ đã định nghĩa */
+            border: 1px solid rgba(255,255,255,0.2); /* Viền mỏng hơn cho tinh tế */
+            padding: 20px;
             color: #fff;
             border-radius: 15px;
             display: flex;
             flex-direction: column;
             z-index: 100;
-            box-shadow: 0 5px 25px rgba(0,0,0,0.5);
-            backdrop-filter: blur(5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            /* TĂNG ĐỘ MỜ (BLUR) ĐỂ TẠO HIỆU ỨNG KÍNH */
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px); /* Cho Safari */
         }
 
         #speaker { 
@@ -76,7 +86,7 @@
             line-height: 1.6; 
             margin-bottom: 20px; 
             min-height: 40px; 
-            white-space: pre-wrap; /* Để xuống dòng được */
+            white-space: pre-wrap; 
         }
         
         .btn-group { display: flex; flex-direction: column; gap: 10px; }
@@ -102,7 +112,6 @@
         
         .hidden { display: none !important; }
 
-        /* Màn hình tổng kết */
         #summary-screen {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.9); z-index: 200;
@@ -215,7 +224,7 @@
             },
             // Các bước ngâm chân
             st2_soak_steps: {
-                text: "🦶 CÁC BƯỚC NGÂM CHÂN CHUẨN:\n\n1. Chuẩn bị chậu nước ấm khoảng 40 độ.\n2. Thêm vài lát gừng đập dập và chút muối(không có không sao).\n3. Ngâm chân thư giãn trong 15-20 phút.\n4. Lau khô chân và đi tất ấm ngay.",
+                text: "🦶 CÁC BƯỚC NGÂM CHÂN CHUẨN:\n\n1. Chuẩn bị chậu nước ấm khoảng 40 độ.\n2. Thêm vài lát gừng đập dập và chút muối.\n3. Ngâm chân thư giãn trong 15-20 phút.\n4. Lau khô chân và đi tất ấm ngay.",
                 choices: [{ text: "Đã nhớ, đi tiếp thôi! ►", nextState: 'station3', move: POSITIONS.STATION_3, save: "Ngâm chân nước ấm" }]
             },
             // Các bước Skincare
@@ -229,13 +238,13 @@
             station3: {
                 text: "TRẠM 3: CHILL TINH THẦN 🎵\nTrạm cuối rồi. Tối nay chốt đơn hoạt động gì đây?",
                 choices: [
-                    { text: "Xem phim cùng Lâm (Một người khỏe, hai người vui🥰 )", nextState: 'st3_withLam' },
+                    { text: "Xem phim cùng Lâm (Cơm chó)", nextState: 'st3_withLam' },
                     { text: "Xem phim một mình (Me time)", nextState: 'st3_alone' },
                     { text: "Đọc truyện tranh & Ngủ sớm", nextState: 'finish', move: POSITIONS.END, save: "Đọc truyện tranh" }
                 ]
             },
             st3_withLam: {
-                text: "🎬 XEM PHIM CÙNG LÂM:\n\nBạn hãy nhắn tin ngay cho Đinh Vũ Lâm để nhận danh sách phim hay nhé! ❤️",
+                text: "🎬 XEM PHIM CÙNG LÂM:\n\nBạn hãy nhắn tin ngay cho Đinh Vũ Lâm: 'Anh ơi, cho em xin menu phim hôm nay' để nhận danh sách phim hay nhé! ❤️",
                 choices: [{ text: "Sẽ nhắn ngay! Hoàn thành ►", nextState: 'finish', move: POSITIONS.END, save: "Xem phim cùng Lâm" }]
             },
             st3_alone: {
@@ -256,14 +265,10 @@
                 btn.innerText = c.text;
                 
                 btn.onclick = () => {
-                    // 1. Lưu lựa chọn nếu có
                     if (c.save) userMenu.push(c.save);
-
-                    // 2. Di chuyển nếu có lệnh move
                     if (c.move) {
                         walkTo(c.move, c.nextState);
                     } else {
-                        // 3. Nếu không di chuyển thì chuyển cảnh luôn (hội thoại tiếp)
                         renderState(c.nextState);
                     }
                 };
@@ -297,7 +302,6 @@
             `;
         }
 
-        // Bắt đầu game
         renderState('start');
     </script>
 </body>
