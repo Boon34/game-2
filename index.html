@@ -8,7 +8,7 @@
     <style>
         :root {
             --main-font: 'Quicksand', sans-serif;
-            --box-bg: rgba(0, 0, 0, 0.6); /* Độ trong suốt vừa phải để dễ đọc chữ */
+            --box-bg: rgba(0, 0, 0, 0.6);
             --text-color: #fff;
             --highlight: #54f357; 
             --btn-hover: #ff69b4;
@@ -26,20 +26,19 @@
             background-repeat: no-repeat;
         }
 
-        /* --- CẤU HÌNH MÈO (ĐÃ CHỈNH LẠI CHO NÉT HƠN) --- */
+        /* --- CẤU HÌNH MÈO --- */
         #hero-cat {
             position: absolute;
             bottom: 34%; 
             left: 5%;
-            width: 80px; /* Thu nhỏ lại 1 chút để pixel gom lại sẽ nét hơn */
+            width: 100px; /* Tăng to lên cho rõ */
             height: auto;
             transition: left 2.5s linear;
             z-index: 10;
             
-            /* Xóa nền đen */
-            mix-blend-mode: screen; 
-
-            /* Ép trình duyệt hiển thị dạng khối pixel */
+            /* QUAN TRỌNG: Đã bỏ dòng mix-blend-mode gây mờ */
+            
+            /* Giữ độ nét Pixel */
             image-rendering: pixelated;
             image-rendering: -moz-crisp-edges;
             image-rendering: crisp-edges;
@@ -48,29 +47,23 @@
         .walking { animation: bounce 0.4s infinite alternate; }
         @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-8px); } }
 
-        /* --- HỘP THOẠI (DESIGN NHỎ GỌN) --- */
+        /* --- HỘP THOẠI --- */
         #dialogue-box {
             position: absolute;
-            /* Hạ thấp hẳn xuống sát mép dưới */
             bottom: 20px; 
             left: 50%;
             transform: translateX(-50%);
-            
-            /* Kích thước mới nhỏ gọn hơn */
             width: 90%;
-            max-width: 400px; /* Giới hạn chiều ngang chỉ 400px (bằng màn hình đt) */
-            
+            max-width: 400px;
             background: var(--box-bg);
             border: 1px solid rgba(255,255,255,0.3);
-            padding: 15px 20px; /* Giảm padding */
+            padding: 15px 20px;
             color: #fff;
             border-radius: 12px;
             display: flex;
             flex-direction: column;
             z-index: 100;
             box-shadow: 0 4px 15px rgba(0,0,0,0.4);
-            
-            /* Hiệu ứng kính mờ */
             backdrop-filter: blur(5px);
             -webkit-backdrop-filter: blur(5px);
         }
@@ -78,13 +71,13 @@
         #speaker { 
             color: var(--highlight); 
             margin-bottom: 5px; 
-            font-size: 0.9rem; /* Chữ tên nhỏ lại */
+            font-size: 0.9rem; 
             font-weight: 700;
             text-transform: uppercase;
         }
         
         #content { 
-            font-size: 0.9rem; /* Chữ nội dung nhỏ lại cho tinh tế */
+            font-size: 0.9rem; 
             line-height: 1.5; 
             margin-bottom: 15px; 
             min-height: 30px; 
@@ -99,7 +92,7 @@
             border: 1px solid rgba(255,255,255,0.1);
             padding: 10px 12px; 
             font-family: var(--main-font); 
-            font-size: 0.85rem; /* Chữ nút nhỏ gọn */
+            font-size: 0.85rem; 
             border-radius: 6px;
             cursor: pointer; 
             text-align: left; 
