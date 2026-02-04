@@ -8,7 +8,7 @@
     <style>
         :root {
             --main-font: 'Quicksand', sans-serif;
-            --box-bg: rgba(0, 0, 0, 0.8);
+            --box-bg: rgba(0, 0, 0, 0.85);
             --text-color: #fff;
             --highlight: #54f357; 
             --btn-hover: #ff69b4;
@@ -20,14 +20,14 @@
             position: relative;
             width: 100%;
             height: 100vh;
-            background-image: url('bg.png'); /* Đảm bảo file tên là bg.png */
+            background-image: url('bg.png'); 
             background-size: cover;
             background-position: center bottom;
             background-repeat: no-repeat;
         }
 
         /* --- CẤU HÌNH MÈO --- */
-       #hero-cat {
+        #hero-cat {
             position: absolute;
             bottom: 34%; 
             left: 5%;
@@ -35,67 +35,59 @@
             height: auto;
             transition: left 2.5s linear;
             z-index: 10;
-            /* Tự động xóa nền đen */
-            mix-blend-mode: screen; 
-
-            /* THÊM DÒNG NÀY ĐỂ MÈO PIXEL SẮC NÉT HƠN */
-            image-rendering: pixelated; /* Cho Chrome, Edge */
-            image-rendering: -moz-crisp-edges; /* Cho Firefox */
+            mix-blend-mode: screen; /* Xóa nền đen */
+            image-rendering: pixelated; /* Giữ độ nét pixel */
         }
 
-        .walking {
-            animation: bounce 0.4s infinite alternate;
-        }
-        @keyframes bounce { 
-            from { transform: translateY(0); } 
-            to { transform: translateY(-8px); } 
-        }
+        .walking { animation: bounce 0.4s infinite alternate; }
+        @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-8px); } }
 
-        /* --- HỘP THOẠI (DESIGN MỚI) --- */
+        /* --- HỘP THOẠI --- */
         #dialogue-box {
             position: absolute;
             bottom: 50px;
             left: 50%;
             transform: translateX(-50%);
             width: 90%;
-            max-width: 550px; /* Thu nhỏ chiều rộng lại */
+            max-width: 600px;
             background: var(--box-bg);
-            border: 2px solid rgba(255,255,255,0.3); /* Viền mỏng hơn */
-            padding: 20px;
+            border: 2px solid rgba(255,255,255,0.3);
+            padding: 25px;
             color: #fff;
-            border-radius: 15px; /* Bo tròn mềm mại */
+            border-radius: 15px;
             display: flex;
             flex-direction: column;
             z-index: 100;
             box-shadow: 0 5px 25px rgba(0,0,0,0.5);
-            backdrop-filter: blur(5px); /* Hiệu ứng mờ nền kính */
+            backdrop-filter: blur(5px);
         }
 
         #speaker { 
             color: var(--highlight); 
-            margin-bottom: 8px; 
-            font-size: 0.9rem; 
+            margin-bottom: 10px; 
+            font-size: 1rem; 
             font-weight: 700;
             letter-spacing: 1px;
             text-transform: uppercase;
         }
         
         #content { 
-            font-size: 0.95rem; /* Chữ to rõ ràng hơn pixel */
+            font-size: 1rem; 
             line-height: 1.6; 
-            margin-bottom: 15px; 
+            margin-bottom: 20px; 
             min-height: 40px; 
+            white-space: pre-wrap; /* Để xuống dòng được */
         }
         
-        .btn-group { display: flex; flex-direction: column; gap: 8px; }
+        .btn-group { display: flex; flex-direction: column; gap: 10px; }
         
         .game-btn {
             background: rgba(255,255,255,0.1); 
             color: #fff; 
             border: 1px solid rgba(255,255,255,0.2);
-            padding: 10px 15px; 
+            padding: 12px 15px; 
             font-family: var(--main-font); 
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             border-radius: 8px;
             cursor: pointer; 
             text-align: left; 
@@ -105,7 +97,7 @@
         .game-btn:hover { 
             background: var(--btn-hover);
             border-color: var(--btn-hover);
-            transform: translateX(5px); /* Hiệu ứng trượt nhẹ */
+            padding-left: 20px;
         }
         
         .hidden { display: none !important; }
@@ -117,6 +109,8 @@
             display: flex; flex-direction: column; justify-content: center; align-items: center;
             color: white; text-align: center;
         }
+        
+        .highlight-text { color: #f3ce54; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -133,7 +127,7 @@
         <div id="summary-screen" class="hidden">
             <h2 style="color: #54f357; margin-bottom: 20px;">MENU CHĂM SÓC ❤️</h2>
             <div id="final-menu" style="text-align: left; line-height: 2; border: 1px dashed #fff; padding: 30px; border-radius: 10px; background: rgba(255,255,255,0.05);"></div>
-            <p style="margin-top: 30px; color: #ff69b4; font-size: 0.9rem; font-style: italic;">"Nghỉ ngơi nhé, yêu em nhiều!"</p>
+            <p style="margin-top: 30px; color: #ff69b4; font-size: 0.9rem; font-style: italic;">"Chụp lại màn hình gửi anh nhé!"</p>
         </div>
     </div>
 
@@ -152,76 +146,129 @@
         const choicesDiv = document.getElementById('choices');
         let userMenu = [];
 
-        // --- KỊCH BẢN GAME (Đã update logic Ăn vặt) ---
+        // --- KỊCH BẢN GAME ---
         const STORY = {
             start: {
                 text: "Chào công chúa! Boon đã sẵn sàng hộ tống bạn đi tìm sự thư giãn đây. Đi thôi nào!",
                 choices: [
-                    { text: "Đi thôi Boon ơi! 🐾", action: () => walkTo(POSITIONS.STATION_1, 'station1') }
+                    { text: "Đi thôi Boon ơi! 🐾", nextState: 'station1', move: POSITIONS.STATION_1 }
                 ]
             },
             
-            // --- TRẠM 1 ---
+            // --- TRẠM 1: ĂN UỐNG ---
             station1: {
                 text: "TRẠM 1: NẠP NĂNG LƯỢNG 🍲\nBụng đang khó chịu, bạn muốn dùng gì?",
                 choices: [
-                    { text: "Nước ấm (Giảm đau bụng)", action: () => saveAndNext("Nước ấm", POSITIONS.STATION_2, 'station2') },
-                    { text: "Hoa quả (Vitamin)", action: () => saveAndNext("Hoa quả", POSITIONS.STATION_2, 'station2') },
-                    // Lựa chọn này dẫn đến menu phụ (đứng yên tại chỗ)
-                    { text: "Ăn vặt & Socola 🍫", action: () => renderDialog('station1_cravings') }
+                    { text: "Nước ấm", nextState: 'st1_water_info' },
+                    { text: "Hoa quả", nextState: 'st1_fruit_info' },
+                    { text: "Ăn vặt (Bim bim/Socola)", nextState: 'st1_snack_menu' }
                 ]
             },
-
-            // MENU PHỤ CỦA ĂN VẶT
-            station1_cravings: {
-                text: "Bạn đang thèm món gì nhất nào?",
+            // Chi tiết Nước ấm
+            st1_water_info: {
+                text: "💧 LỢI ÍCH CỦA NƯỚC ẤM:\n\nGiúp giãn cơ tử cung, giảm đau bụng hiệu quả và tăng cường lưu thông máu giúp cơ thể dễ chịu hơn.",
+                choices: [{ text: "Tuyệt vời, chọn món này! ►", nextState: 'station2', move: POSITIONS.STATION_2, save: "Nước ấm" }]
+            },
+            // Chi tiết Hoa quả
+            st1_fruit_info: {
+                text: "🍎 LỢI ÍCH CỦA HOA QUẢ:\nCung cấp Vitamin, giảm mệt mỏi và cảm giác thèm ngọt.\n\n✨ Gợi ý các loại quả tốt nhất:\n- Dưa hấu\n- Cam\n- Chuối\n- Ổi",
+                choices: [{ text: "Ok, sẽ đi ăn hoa quả! ►", nextState: 'station2', move: POSITIONS.STATION_2, save: "Hoa quả (Cam/Ổi/Chuối...)" }]
+            },
+            // Menu Ăn vặt
+            st1_snack_menu: {
+                text: "Bạn thèm món ăn vặt nào?",
                 choices: [
-                    { text: "Bim bim Khoai tây", action: () => showBenefit("Bim bim Khoai tây", "Khoai tây giòn rụm, ăn vào vui miệng xả stress cực tốt! 🥔", POSITIONS.STATION_2, 'station2') },
-                    { text: "Snack Lays", action: () => showBenefit("Snack Lays", "Lát khoai mỏng dính, đậm đà, ăn là dính, quên hết mệt mỏi! ✨", POSITIONS.STATION_2, 'station2') },
-                    { text: "Socola", action: () => showBenefit("Socola", "Socola giúp tăng mood tức thì và Magie giúp giảm đau bụng đó! 🍫", POSITIONS.STATION_2, 'station2') }
+                    { text: "Bim bim 🥔", nextState: 'st1_bimbim_menu' },
+                    { text: "Socola 🍫", nextState: 'st1_choco_info' }
                 ]
             },
+            // Menu Bim bim
+            st1_bimbim_menu: {
+                text: "Chọn loại Bim bim yêu thích nào:",
+                choices: [
+                    { text: "Bim bim Lays (Khoai tây)", nextState: 'st1_lays_info' },
+                    { text: "Bim bim Cà chua", nextState: 'st1_tomato_info' }
+                ]
+            },
+            st1_lays_info: {
+                text: "🥔 LAYS:\nNhững lát khoai tây vàng ươm, giòn rụm. Ăn vào là thấy vui vẻ, xả stress ngay lập tức!",
+                choices: [{ text: "Chốt đơn Lays! ►", nextState: 'station2', move: POSITIONS.STATION_2, save: "Bim bim Lays" }]
+            },
+            st1_tomato_info: {
+                text: "🍅 BIM BIM CÀ CHUA:\nVị chua ngọt tuổi thơ thần thánh, ăn cuốn không ngừng được!",
+                choices: [{ text: "Chốt đơn vị Cà chua! ►", nextState: 'station2', move: POSITIONS.STATION_2, save: "Bim bim Cà chua" }]
+            },
+            // Chi tiết Socola
+            st1_choco_info: {
+                text: "🍫 LỢI ÍCH CỦA SOCOLA:\nSocola đen chứa Magie giúp giảm đau bụng kinh và kích thích 'hormone hạnh phúc' giúp tâm trạng tốt hơn hẳn.",
+                choices: [{ text: "Chốt đơn Socola! ►", nextState: 'station2', move: POSITIONS.STATION_2, save: "Socola" }]
+            },
 
-            // --- TRẠM 2 ---
+
+            // --- TRẠM 2: CƠ THỂ ---
             station2: {
-                text: "TRẠM 2: SPA TẠI GIA 🛁\nĐi được nửa đường rồi. Cơ thể cần được vỗ về, bạn muốn làm gì?",
+                text: "TRẠM 2: SPA TẠI GIA 🛁\nĐi được nửa đường rồi. Bạn muốn chăm sóc cơ thể thế nào?",
                 choices: [
-                    { text: "Ngâm chân nước ấm trước ngủ", action: () => saveAndNext("Ngâm chân", POSITIONS.STATION_3, 'station3') },
-                    { text: "Skincare tối giản, nhẹ nhàng", action: () => saveAndNext("Skincare", POSITIONS.STATION_3, 'station3') }
+                    { text: "Ngâm chân nước ấm", nextState: 'st2_soak_steps' },
+                    { text: "Skincare tối giản", nextState: 'st2_skincare_steps' }
                 ]
             },
+            // Các bước ngâm chân
+            st2_soak_steps: {
+                text: "🦶 CÁC BƯỚC NGÂM CHÂN CHUẨN:\n\n1. Chuẩn bị chậu nước ấm khoảng 40 độ.\n2. Thêm vài lát gừng đập dập và chút muối(không có không sao).\n3. Ngâm chân thư giãn trong 15-20 phút.\n4. Lau khô chân và đi tất ấm ngay.",
+                choices: [{ text: "Đã nhớ, đi tiếp thôi! ►", nextState: 'station3', move: POSITIONS.STATION_3, save: "Ngâm chân nước ấm" }]
+            },
+            // Các bước Skincare
+            st2_skincare_steps: {
+                text: "✨ CÁC BƯỚC SKINCARE (Ngày dâu):\n\n1. Rửa mặt thật sạch (Quan trọng nhất).\n2. Toner cấp ẩm nhẹ nhàng.\n3. Kem dưỡng ẩm mỏng nhẹ.\n(Lưu ý: Tối giản thôi để da được thở nhé!)",
+                choices: [{ text: "Đã nhớ, đi tiếp thôi! ►", nextState: 'station3', move: POSITIONS.STATION_3, save: "Skincare tối giản" }]
+            },
 
-            // --- TRẠM 3 ---
+
+            // --- TRẠM 3: TINH THẦN ---
             station3: {
                 text: "TRẠM 3: CHILL TINH THẦN 🎵\nTrạm cuối rồi. Tối nay chốt đơn hoạt động gì đây?",
                 choices: [
-                    { text: "Xem phim cùng Lâm (Cơm chó)", action: () => saveAndNext("Xem phim cùng Lâm", POSITIONS.END, 'finish') },
-                    { text: "Xem phim một mình (Me time)", action: () => saveAndNext("Xem phim 1 mình", POSITIONS.END, 'finish') },
-                    { text: "Đọc truyện tranh & Ngủ sớm", action: () => saveAndNext("Đọc truyện", POSITIONS.END, 'finish') }
+                    { text: "Xem phim cùng Lâm (Một người khỏe, hai người vui🥰 )", nextState: 'st3_withLam' },
+                    { text: "Xem phim một mình (Me time)", nextState: 'st3_alone' },
+                    { text: "Đọc truyện tranh & Ngủ sớm", nextState: 'finish', move: POSITIONS.END, save: "Đọc truyện tranh" }
                 ]
             },
-
-            // Màn hình hiển thị lợi ích (Dùng chung)
-            benefit_screen: {
-                text: "", // Sẽ được điền tự động
-                choices: [] 
+            st3_withLam: {
+                text: "🎬 XEM PHIM CÙNG LÂM:\n\nBạn hãy nhắn tin ngay cho Đinh Vũ Lâm để nhận danh sách phim hay nhé! ❤️",
+                choices: [{ text: "Sẽ nhắn ngay! Hoàn thành ►", nextState: 'finish', move: POSITIONS.END, save: "Xem phim cùng Lâm" }]
+            },
+            st3_alone: {
+                text: "🍿 XEM PHIM MỘT MÌNH:\n\nTận hưởng không gian riêng tư. Nếu bí phim, hãy nhắn tin cho Đinh Vũ Lâm để được tư vấn bộ phim chữa lành xịn xò nhé!",
+                choices: [{ text: "Okela! Hoàn thành ►", nextState: 'finish', move: POSITIONS.END, save: "Xem phim 1 mình" }]
             }
         };
 
-        // --- HÀM XỬ LÝ ---
-        
-        // Hàm mới: Hiển thị lợi ích xong mới đi tiếp
-        function showBenefit(choice, benefitText, nextPos, nextKey) {
-            userMenu.push(choice);
-            contentDiv.innerText = benefitText; // Hiện lợi ích
-            choicesDiv.innerHTML = ''; // Xóa nút cũ
-            
-            // Tạo nút OK để đi tiếp
-            const btn = document.createElement('button');
-            btn.className = 'game-btn';
-            btn.innerText = "Tuyệt vời, đi tiếp thôi! ►";
-            btn.onclick = () => walkTo(nextPos, nextKey);
-            choicesDiv.appendChild(btn);
+        // --- HÀM XỬ LÝ LOGIC ---
+        function renderState(stateKey) {
+            const data = STORY[stateKey];
+            contentDiv.innerText = data.text;
+            choicesDiv.innerHTML = ''; 
+
+            data.choices.forEach(c => {
+                const btn = document.createElement('button');
+                btn.className = 'game-btn';
+                btn.innerText = c.text;
+                
+                btn.onclick = () => {
+                    // 1. Lưu lựa chọn nếu có
+                    if (c.save) userMenu.push(c.save);
+
+                    // 2. Di chuyển nếu có lệnh move
+                    if (c.move) {
+                        walkTo(c.move, c.nextState);
+                    } else {
+                        // 3. Nếu không di chuyển thì chuyển cảnh luôn (hội thoại tiếp)
+                        renderState(c.nextState);
+                    }
+                };
+                choicesDiv.appendChild(btn);
+            });
         }
 
         function walkTo(targetPercent, nextStoryKey) {
@@ -235,28 +282,9 @@
                     showSummary();
                 } else {
                     dialogBox.classList.remove('hidden');
-                    renderDialog(nextStoryKey);
+                    renderState(nextStoryKey);
                 }
             }, 2500);
-        }
-
-        function saveAndNext(choice, nextPos, nextKey) {
-            userMenu.push(choice);
-            walkTo(nextPos, nextKey);
-        }
-
-        function renderDialog(key) {
-            const data = STORY[key];
-            contentDiv.innerText = data.text;
-            choicesDiv.innerHTML = ''; 
-
-            data.choices.forEach(c => {
-                const btn = document.createElement('button');
-                btn.className = 'game-btn';
-                btn.innerText = c.text;
-                btn.onclick = c.action;
-                choicesDiv.appendChild(btn);
-            });
         }
 
         function showSummary() {
@@ -269,7 +297,8 @@
             `;
         }
 
-        renderDialog('start');
+        // Bắt đầu game
+        renderState('start');
     </script>
 </body>
 </html>
