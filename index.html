@@ -3,45 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Boon's Adventure: For My Princess</title>
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <title>Boon's Adventure: Care Edition</title>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --pixel-font: 'Press Start 2P', cursive;
-            --box-bg: rgba(0, 0, 0, 0.85); /* Nền đen trong suốt cho hộp thoại */
+            --main-font: 'Quicksand', sans-serif;
+            --box-bg: rgba(0, 0, 0, 0.8);
             --text-color: #fff;
-            --highlight: #54f357; /* Màu xanh neon */
-            --btn-hover: #ff69b4; /* Màu hồng khi di chuột vào nút */
+            --highlight: #54f357; 
+            --btn-hover: #ff69b4;
         }
 
-        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #333; font-family: var(--pixel-font); }
+        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #333; font-family: var(--main-font); }
 
-        /* Sân khấu game */
         #game-stage {
             position: relative;
             width: 100%;
             height: 100vh;
-            /* ĐÃ ĐỔI THÀNH .PNG Ở ĐÂY */
-            background-image: url('bg.png'); 
-            background-size: cover; /* Phủ kín màn hình */
-            background-position: center bottom; /* Căn đáy để thấy mặt cầu */
+            background-image: url('bg.png'); /* Đảm bảo file tên là bg.png */
+            background-size: cover;
+            background-position: center bottom;
             background-repeat: no-repeat;
         }
 
-        /* Nhân vật Mèo */
+        /* --- CẤU HÌNH MÈO --- */
         #hero-cat {
             position: absolute;
-            bottom: 22%; /* Vị trí này khớp với mặt cỏ trên cầu */
-            left: 5%;    /* Xuất phát điểm */
-            width: 100px; /* Độ to của mèo */
+            /* Đẩy lên cao hơn để đứng trên cầu (34%) */
+            bottom: 34%; 
+            left: 5%;
+            width: 90px; /* Bé lại một chút cho cân đối */
             height: auto;
-            transition: left 2.5s linear; /* Tốc độ di chuyển */
+            transition: left 2.5s linear;
             z-index: 10;
-            /* THÊM DÒNG NÀY VÀO LÀ HẾT ĐEN NGAY */
-    mix-blend-mode: screen;
+            
+            /* DÒNG LỆNH QUAN TRỌNG: Tự động xóa nền đen của ảnh mèo */
+            mix-blend-mode: screen; 
         }
 
-        /* Hiệu ứng nhún nhảy khi mèo đi */
         .walking {
             animation: bounce 0.4s infinite alternate;
         }
@@ -50,74 +49,69 @@
             to { transform: translateY(-8px); } 
         }
 
-        /* Hộp thoại bên dưới */
+        /* --- HỘP THOẠI (DESIGN MỚI) --- */
         #dialogue-box {
             position: absolute;
-            bottom: 30px; /* Cách đáy màn hình */
+            bottom: 50px;
             left: 50%;
             transform: translateX(-50%);
             width: 90%;
-            max-width: 800px;
+            max-width: 550px; /* Thu nhỏ chiều rộng lại */
             background: var(--box-bg);
-            border: 4px solid #fff;
+            border: 2px solid rgba(255,255,255,0.3); /* Viền mỏng hơn */
             padding: 20px;
             color: #fff;
-            border-radius: 10px;
+            border-radius: 15px; /* Bo tròn mềm mại */
             display: flex;
             flex-direction: column;
             z-index: 100;
-            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            box-shadow: 0 5px 25px rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px); /* Hiệu ứng mờ nền kính */
         }
 
         #speaker { 
             color: var(--highlight); 
-            margin-bottom: 12px; 
-            font-size: 1rem; 
-            text-shadow: 2px 2px #000;
+            margin-bottom: 8px; 
+            font-size: 0.9rem; 
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
         }
         
         #content { 
-            font-size: 0.8rem; 
-            line-height: 1.8; 
-            margin-bottom: 20px; 
-            min-height: 50px; 
+            font-size: 0.95rem; /* Chữ to rõ ràng hơn pixel */
+            line-height: 1.6; 
+            margin-bottom: 15px; 
+            min-height: 40px; 
         }
         
-        .btn-group { display: flex; flex-direction: column; gap: 10px; }
+        .btn-group { display: flex; flex-direction: column; gap: 8px; }
         
         .game-btn {
-            background: transparent; 
+            background: rgba(255,255,255,0.1); 
             color: #fff; 
-            border: 2px solid #555;
-            padding: 12px; 
-            font-family: var(--pixel-font); 
-            font-size: 0.7rem;
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 10px 15px; 
+            font-family: var(--main-font); 
+            font-size: 0.9rem;
+            border-radius: 8px;
             cursor: pointer; 
             text-align: left; 
             transition: all 0.2s;
-            position: relative;
-            padding-left: 30px;
         }
         
         .game-btn:hover { 
+            background: var(--btn-hover);
             border-color: var(--btn-hover);
-            color: var(--btn-hover); 
+            transform: translateX(5px); /* Hiệu ứng trượt nhẹ */
         }
         
-        .game-btn:hover::before {
-            content: "►";
-            position: absolute;
-            left: 10px;
-            animation: blink 0.5s infinite;
-        }
-
-        @keyframes blink { 50% { opacity: 0; } }
         .hidden { display: none !important; }
 
         /* Màn hình tổng kết */
         #summary-screen {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.95); z-index: 200;
+            background: rgba(0,0,0,0.9); z-index: 200;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
             color: white; text-align: center;
         }
@@ -135,20 +129,19 @@
         </div>
 
         <div id="summary-screen" class="hidden">
-            <h1 style="color: #54f357; margin-bottom: 30px; line-height: 1.5;">MISSION<br>COMPLETED</h1>
-            <div id="final-menu" style="text-align: left; line-height: 2; border: 2px dashed #fff; padding: 20px;"></div>
-            <p style="margin-top: 30px; color: #ff69b4; font-size: 0.8rem;">(Chụp màn hình gửi cho Lâm nhé! ❤️)</p>
+            <h2 style="color: #54f357; margin-bottom: 20px;">MENU CHĂM SÓC ❤️</h2>
+            <div id="final-menu" style="text-align: left; line-height: 2; border: 1px dashed #fff; padding: 30px; border-radius: 10px; background: rgba(255,255,255,0.05);"></div>
+            <p style="margin-top: 30px; color: #ff69b4; font-size: 0.9rem; font-style: italic;">"Nghỉ ngơi nhé, yêu em nhiều!"</p>
         </div>
     </div>
 
     <script>
-        // Cấu hình vị trí các trạm (căn chỉnh theo % chiều ngang màn hình)
         const POSITIONS = {
             START: 5,
-            STATION_1: 30, // Trạm ăn uống
-            STATION_2: 55, // Trạm cơ thể
-            STATION_3: 80, // Trạm tinh thần
-            END: 120       // Đi khuất màn hình
+            STATION_1: 30, 
+            STATION_2: 55, 
+            STATION_3: 80, 
+            END: 120       
         };
 
         const cat = document.getElementById('hero-cat');
@@ -157,56 +150,89 @@
         const choicesDiv = document.getElementById('choices');
         let userMenu = [];
 
-        // KỊCH BẢN GAME
+        // --- KỊCH BẢN GAME (Đã update logic Ăn vặt) ---
         const STORY = {
             start: {
-                text: "Chào bạn! Mình là Boon Real Cool.\nĐinh Vũ Lâm phái mình đến tháp tùng bạn đi qua Cầu Cầu Vồng để tìm lại sự thư giãn.\n\nSẵn sàng chưa?",
+                text: "Chào công chúa! Boon đã sẵn sàng hộ tống bạn đi tìm sự thư giãn đây. Đi thôi nào!",
                 choices: [
                     { text: "Đi thôi Boon ơi! 🐾", action: () => walkTo(POSITIONS.STATION_1, 'station1') }
                 ]
             },
+            
+            // --- TRẠM 1 ---
             station1: {
-                text: "TRẠM 1: NẠP NĂNG LƯỢNG 🍲\n\nBụng bạn đang khó chịu, hãy chọn món gì đó ấm áp nhé?",
+                text: "TRẠM 1: NẠP NĂNG LƯỢNG 🍲\nBụng đang khó chịu, bạn muốn dùng gì?",
                 choices: [
-                    { text: "Nước ấm (Giảm đau bụng ngay)", action: () => saveAndNext("Nước ấm", POSITIONS.STATION_2, 'station2') },
-                    { text: "Hoa quả: Chuối/Đu đủ (Giảm mệt)", action: () => saveAndNext("Hoa quả", POSITIONS.STATION_2, 'station2') },
-                    { text: "Gói cứu trợ: Bim bim (Vui vẻ)", action: () => saveAndNext("Bim bim/Ăn vặt", POSITIONS.STATION_2, 'station2') }
+                    { text: "Nước ấm (Giảm đau bụng)", action: () => saveAndNext("Nước ấm", POSITIONS.STATION_2, 'station2') },
+                    { text: "Hoa quả (Vitamin)", action: () => saveAndNext("Hoa quả", POSITIONS.STATION_2, 'station2') },
+                    // Lựa chọn này dẫn đến menu phụ (đứng yên tại chỗ)
+                    { text: "Ăn vặt & Socola 🍫", action: () => renderDialog('station1_cravings') }
                 ]
             },
+
+            // MENU PHỤ CỦA ĂN VẶT
+            station1_cravings: {
+                text: "Bạn đang thèm món gì nhất nào?",
+                choices: [
+                    { text: "Bim bim Khoai tây", action: () => showBenefit("Bim bim Khoai tây", "Khoai tây giòn rụm, ăn vào vui miệng xả stress cực tốt! 🥔", POSITIONS.STATION_2, 'station2') },
+                    { text: "Snack Lays", action: () => showBenefit("Snack Lays", "Lát khoai mỏng dính, đậm đà, ăn là dính, quên hết mệt mỏi! ✨", POSITIONS.STATION_2, 'station2') },
+                    { text: "Socola", action: () => showBenefit("Socola", "Socola giúp tăng mood tức thì và Magie giúp giảm đau bụng đó! 🍫", POSITIONS.STATION_2, 'station2') }
+                ]
+            },
+
+            // --- TRẠM 2 ---
             station2: {
-                text: "TRẠM 2: CHĂM SÓC CƠ THỂ 🛁\n\nĐi được nửa đường rồi. Cơ thể cần được vỗ về, bạn muốn làm gì?",
+                text: "TRẠM 2: SPA TẠI GIA 🛁\nĐi được nửa đường rồi. Cơ thể cần được vỗ về, bạn muốn làm gì?",
                 choices: [
                     { text: "Ngâm chân nước ấm trước ngủ", action: () => saveAndNext("Ngâm chân", POSITIONS.STATION_3, 'station3') },
                     { text: "Skincare tối giản, nhẹ nhàng", action: () => saveAndNext("Skincare", POSITIONS.STATION_3, 'station3') }
                 ]
             },
+
+            // --- TRẠM 3 ---
             station3: {
-                text: "TRẠM 3: CHILL TINH THẦN 🎵\n\nTrạm cuối cùng trên cầu. Tối nay bạn muốn không gian như thế nào?",
+                text: "TRẠM 3: CHILL TINH THẦN 🎵\nTrạm cuối rồi. Tối nay chốt đơn hoạt động gì đây?",
                 choices: [
                     { text: "Xem phim cùng Lâm (Cơm chó)", action: () => saveAndNext("Xem phim cùng Lâm", POSITIONS.END, 'finish') },
                     { text: "Xem phim một mình (Me time)", action: () => saveAndNext("Xem phim 1 mình", POSITIONS.END, 'finish') },
                     { text: "Đọc truyện tranh & Ngủ sớm", action: () => saveAndNext("Đọc truyện", POSITIONS.END, 'finish') }
                 ]
+            },
+
+            // Màn hình hiển thị lợi ích (Dùng chung)
+            benefit_screen: {
+                text: "", // Sẽ được điền tự động
+                choices: [] 
             }
         };
 
-        // HÀM XỬ LÝ
-        function walkTo(targetPercent, nextStoryKey) {
-            // 1. Ẩn hộp thoại để đi
-            dialogBox.classList.add('hidden');
+        // --- HÀM XỬ LÝ ---
+        
+        // Hàm mới: Hiển thị lợi ích xong mới đi tiếp
+        function showBenefit(choice, benefitText, nextPos, nextKey) {
+            userMenu.push(choice);
+            contentDiv.innerText = benefitText; // Hiện lợi ích
+            choicesDiv.innerHTML = ''; // Xóa nút cũ
             
-            // 2. Mèo bắt đầu đi (thêm class nhún nhảy)
-            cat.classList.add('walking');
-            cat.style.left = targetPercent + '%'; // Di chuyển vị trí CSS
+            // Tạo nút OK để đi tiếp
+            const btn = document.createElement('button');
+            btn.className = 'game-btn';
+            btn.innerText = "Tuyệt vời, đi tiếp thôi! ►";
+            btn.onclick = () => walkTo(nextPos, nextKey);
+            choicesDiv.appendChild(btn);
+        }
 
-            // 3. Thời gian chờ mèo đi đến nơi (2.5 giây)
+        function walkTo(targetPercent, nextStoryKey) {
+            dialogBox.classList.add('hidden');
+            cat.classList.add('walking');
+            cat.style.left = targetPercent + '%'; 
+
             setTimeout(() => {
-                cat.classList.remove('walking'); // Dừng nhún
-                
+                cat.classList.remove('walking');
                 if (nextStoryKey === 'finish') {
                     showSummary();
                 } else {
-                    dialogBox.classList.remove('hidden'); // Hiện lại hộp thoại
+                    dialogBox.classList.remove('hidden');
                     renderDialog(nextStoryKey);
                 }
             }, 2500);
@@ -235,16 +261,13 @@
             document.getElementById('summary-screen').classList.remove('hidden');
             const menuDiv = document.getElementById('final-menu');
             menuDiv.innerHTML = `
-                MENU CHĂM SÓC ĐÃ CHỌN:<br><br>
-                1. Ăn uống: <span style="color:#54f357">${userMenu[0]}</span><br>
-                2. Body: <span style="color:#54f357">${userMenu[1]}</span><br>
-                3. Spirit: <span style="color:#54f357">${userMenu[2]}</span>
+                <b>1. Ăn uống:</b> ${userMenu[0]}<br>
+                <b>2. Body:</b> ${userMenu[1]}<br>
+                <b>3. Spirit:</b> ${userMenu[2]}
             `;
         }
 
-        // Bắt đầu game
         renderDialog('start');
-
     </script>
 </body>
 </html>
