@@ -26,23 +26,20 @@
             background-repeat: no-repeat;
         }
 
-       /* --- CẤU HÌNH MÈO (SỬA LỖI TÀNG HÌNH) --- */
+        /* --- CẤU HÌNH MÈO --- */
         #hero-cat {
             position: absolute;
             bottom: 34%; 
             left: 5%;
-            width: 110px; /* Tăng to hơn xíu nữa cho rõ */
+            width: 100px; /* Tăng to lên cho rõ */
             height: auto;
             transition: left 2.5s linear;
             z-index: 10;
             
-            /* --- LỆNH QUAN TRỌNG ĐỂ SỬA LỖI MỜ --- */
-            mix-blend-mode: normal !important; /* Tắt chế độ hòa trộn */
-            opacity: 1 !important;             /* Ép độ đậm 100% */
-            filter: none !important;           /* Bỏ mọi bộ lọc làm mờ */
+            /* QUAN TRỌNG: Đã bỏ dòng mix-blend-mode gây mờ */
             
             /* Giữ độ nét Pixel */
-            image-rendering: pixelated; 
+            image-rendering: pixelated;
             image-rendering: -moz-crisp-edges;
             image-rendering: crisp-edges;
         }
