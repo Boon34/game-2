@@ -26,22 +26,20 @@
             background-repeat: no-repeat;
         }
 
-        /* --- CẤU HÌNH MÈO --- */
+       /* --- CẤU HÌNH MÈO --- */
         #hero-cat {
             position: absolute;
             bottom: 34%; 
             left: 5%;
-            width: 100px; /* Tăng to lên cho rõ */
+            width: 100px; /* Kích thước to rõ */
             height: auto;
             transition: left 2.5s linear;
             z-index: 10;
             
-            /* QUAN TRỌNG: Đã bỏ dòng mix-blend-mode gây mờ */
+            /* --- TUYỆT ĐỐI KHÔNG ĐỂ DÒNG mix-blend-mode Ở ĐÂY --- */
             
-            /* Giữ độ nét Pixel */
-            image-rendering: pixelated;
-            image-rendering: -moz-crisp-edges;
-            image-rendering: crisp-edges;
+            /* Giữ dòng này để mèo không bị nhòe */
+            image-rendering: pixelated; 
         }
 
         .walking { animation: bounce 0.4s infinite alternate; }
